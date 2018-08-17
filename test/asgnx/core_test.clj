@@ -107,3 +107,88 @@
       (is (= "No!" ((router msg4) msg4)))
       (is (= 3 ((router msg2) msg2)))
       (is (= msg3 ((router msg3) msg3))))))
+
+
+(defn action-send [system {:keys [to msg]}]
+  (put! (:state-mgr system) [:msgs to] msg))
+
+(defn pending-send-msgs [system to]
+  (get! (:state-mgr system) [:msgs to]))
+
+(def send-action-handlers
+  {:send action-send})
+
+(deftest handle-message-test
+  (testing "the integration and handling of messages"
+    (let [ehdlrs (merge
+                   send-action-handlers
+                   kvstore/action-handlers)
+          state  (atom {})
+          smgr   (kvstore/create state)
+          system {:state-mgr smgr
+                  :effect-handlers ehdlrs}]
+      (is (= "There are no experts on that topic."
+             (<!! (handle-message
+                    system
+                    "test-user"
+                    "ask food best burger in nashville"))))
+      (is (= "test-user is now an expert on food."
+             (<!! (handle-message
+                    system
+                    "test-user"
+                    "expert food"))))
+      (is (= "Asking 1 expert(s) for an answer to: \"what burger\""
+             (<!! (handle-message
+                    system
+                    "test-user"
+                    "ask food what burger"))))
+      (is (= "what burger"
+             (<!! (pending-send-msgs system "test-user"))))
+      (is (= "test-user2 is now an expert on food."
+             (<!! (handle-message
+                    system
+                    "test-user2"
+                    "expert food"))))
+      (is (= "Asking 2 expert(s) for an answer to: \"what burger\""
+             (<!! (handle-message
+                    system
+                    "test-user"
+                    "ask food what burger"))))
+      (is (= "what burger"
+             (<!! (pending-send-msgs system "test-user"))))
+      (is (= "what burger"
+             (<!! (pending-send-msgs system "test-user2"))))
+      (is (= "You must ask a valid question."
+             (<!! (handle-message
+                    system
+                    "test-user"
+                    "ask food "))))
+      (is (= "test-user is now an expert on nashville."
+             (<!! (handle-message
+                    system
+                    "test-user"
+                    "expert nashville"))))
+      (is (= "Asking 1 expert(s) for an answer to: \"what bus\""
+             (<!! (handle-message
+                    system
+                    "test-user2"
+                    "ask nashville what bus"))))
+      (is (= "what bus"
+             (<!! (pending-send-msgs system "test-user"))))
+      (is (= "Your answer was sent."
+             (<!! (handle-message
+                   system
+                   "test-user"
+                   "answer the blue bus"))))
+      (is (= "the blue bus"
+             (<!! (pending-send-msgs system "test-user2"))))
+      (is (= "You did not provide an answer."
+             (<!! (handle-message
+                   system
+                   "test-user"
+                   "answer"))))
+      (is (= "You haven't been asked a question."
+             (<!! (handle-message
+                   system
+                   "test-user3"
+                   "answer the blue bus")))))))
