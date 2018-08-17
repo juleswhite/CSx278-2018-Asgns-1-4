@@ -77,6 +77,7 @@
            (throw e))))
 
 (def assignment-id (:id assignment-config))
+(def assignment-repo (:repo assignment-config))
 (def scoring (:scoring assignment-config))
 (def course-id (:course-id assignment-config))
 (def client-id (:client-id assignment-config))
@@ -152,9 +153,10 @@
     (when (not (.exists repo))
       (println "Initializing hand-in directory...")
       (io/make-parents path)
-      (fs/copy-dir "./" path)
-      (when (fs/exists? histpath) (fs/delete-dir histpath))
-      (git/git-init path)
+      ;(fs/copy-dir "./" path)
+      (git/git-clone-full assignment-repo repo)
+      ;(when (fs/exists? histpath) (fs/delete-dir histpath))
+      ;(git/git-init path)
       (let [repo (asgn-git-repo)]
         (println repo)
         (git/git-add repo ".")

@@ -1,5 +1,6 @@
 {:id        "asgn1"
  :course-id "cs4278"
+ :repo      "https://github.com/juleswhite/CSx278-2018-Asgns-1-4.git"
  :target    "https://2sheob0vo0.execute-api.us-east-1.amazonaws.com/dev/submit"
  :client-id "2akam9tnpjfkkdn1e38qbopkb4"
  :scoring   {:asgnx.core-test 100}}
