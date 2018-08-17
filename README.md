@@ -5,16 +5,16 @@
 Asgn 1 is contained in the master branch of this repo. Complete this assignment and
 make sure that all of your code is committed.
 
-Asgn 2 is contained in the "asgn2" brancho f this repo. When you are ready to start
+Asgn 2 is contained in the "asgn2" branch of this repo. When you are ready to start
 Asgn 2, create a new "asgn2-solution" branch ("git checkout -b asgn2-solution") and
-merge the "asgn2" branch into it ("git merge asgn2"). 
+merge the "asgn2" branch into it ("git merge asgn2").
 
-Asgn 3 is contained in the "asgn3" brancho f this repo. When you are ready to start
-Asgn 3, create a new "asgn3-solution" branch from your asgn2-solution branch ("git 
+Asgn 3 is contained in the "asgn3" branch of this repo. When you are ready to start
+Asgn 3, create a new "asgn3-solution" branch from your asgn2-solution branch ("git
 checkout -b asgn3-solution") and merge the "asgn3" branch into it ("git merge asgn3").
 
-Asgn 4 is contained in the "asgn4" brancho f this repo. When you are ready to start
-Asgn 4, create a new "asgn4-solution" branch from your asgn3-solution branch ("git 
+Asgn 4 is contained in the "asgn4" branch of this repo. When you are ready to start
+Asgn 4, create a new "asgn4-solution" branch from your asgn3-solution branch ("git
 checkout -b asgn4-solution") and merge the "asgn4" branch into it ("git merge asgn4").
 
 ## Installation for Asgns 1-3
@@ -26,7 +26,8 @@ checkout -b asgn4-solution") and merge the "asgn4" branch into it ("git merge as
      that your AWS account credentials are stored in a credentials file as
      described here: https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html
   5. Sign up for a Cognito account for the Autograder using:
-     https://cs4278-2018.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=2akam9tnpjfkkdn1e38qbopkb4&redirect_uri=https://magnum.io
+
+     https://cs4278-2018.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=2akam9tnpjfkkdn1e38qbopkb4&redirect_uri=https://www.magnum.io
 
      Note: after signing up, you may be redirected to a blank page, which is OK. Just
            make sure that you create an account.
