@@ -33,7 +33,6 @@
                       [lein-npm       "0.6.2"]
                       [lein-cljsbuild "1.1.7"]
                       [io.nervous/lein-cljs-lambda "0.6.6"]
-                      [cider/cider-nrepl "0.18.0-snapshot"]
                       [com.jakemccrary/lein-test-refresh "0.22.0"]]
 
             :test-refresh {:refresh-dirs ["src" "test"]
