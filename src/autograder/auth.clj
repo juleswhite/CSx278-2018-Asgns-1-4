@@ -24,7 +24,7 @@
 (defn aws-cli [params]
  (try
    (transit/read-transit
-     (apply aws params))
+     (apply aws (concat params ["--region" "us-east-1"])))
    (catch Exception e
           (-> e ex-data :proc :err println)
           nil)))
