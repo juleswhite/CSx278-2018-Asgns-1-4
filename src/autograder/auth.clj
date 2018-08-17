@@ -10,11 +10,11 @@
      (catch Exception e
             (println "
                      ============================================================
- 
-                     ERROR!!!!                     
 
-                     You must install the Amazon AWS Command Line tools 
-                     (https://aws.amazon.com/cli/) and ensure that the 'aws' 
+                     ERROR!!!!
+
+                     You must install the Amazon AWS Command Line tools
+                     (https://aws.amazon.com/cli/) and ensure that the 'aws'
                      command is on your path.
 
                      ============================================================
@@ -24,7 +24,8 @@
 (defn aws-cli [params]
  (try
    (transit/read-transit
-     (apply aws (concat params ["--region" "us-east-1"])))
+     (apply aws (concat params ["--region" "us-east-1"
+                                "--no-sign-request"])))
    (catch Exception e
           (-> e ex-data :proc :err println)
           nil)))
@@ -42,15 +43,15 @@
   (get-in response ["AuthenticationResult" "ExpiresIn"]))
 
 (defn get-access-token [client-id refresh-token]
-  (if-let [resp (aws-cli 
+  (if-let [resp (aws-cli
                  ["cognito-idp" "initiate-auth"
                   "--auth-flow" "REFRESH_TOKEN_AUTH"
-                  "--client-id" client-id 
+                  "--client-id" client-id
                   "--auth-parameters" (str "REFRESH_TOKEN=" refresh-token)])]
     resp))
 
 
-(defn user-attributes 
+(defn user-attributes
   "Extracts the [{Name xyz, Value qrs} {Name xyz2, Value qrs2}...] format
    of user attributes from Cognito into a map in the format {xyz qrs xyz2 qrs2}."
   [m]
@@ -59,14 +60,14 @@
        (into {})))
 
 (defn get-user [tokens]
-  (if-let [resp (aws-cli 
+  (if-let [resp (aws-cli
                  ["cognito-idp" "get-user"
                   "--access-token" (:access-token tokens)])]
     (-> resp
         user-attributes
         (assoc :username (get resp "Username")))))
- 
-    
+
+
 
 (defn prompt [msg]
   (println msg)
@@ -74,16 +75,16 @@
 
 (defn tokens [resp]
   {:expiration    (+ (System/currentTimeMillis) (* 1000 (expires-in resp)))
-   :access-token  (access-token resp) 
+   :access-token  (access-token resp)
    :id-token      (id-token resp)
    :refresh-token (refresh-token resp)})
 
-(defn authenticate 
+(defn authenticate
   ([client-id user pass]
    (if-let [resp (aws-cli
-                  ["cognito-idp" "initiate-auth" 
-                   "--auth-flow" "USER_PASSWORD_AUTH" 
-                   "--client-id" client-id 
+                  ["cognito-idp" "initiate-auth"
+                   "--auth-flow" "USER_PASSWORD_AUTH"
+                   "--client-id" client-id
                    "--auth-parameters" (str "USERNAME=" user ",PASSWORD=" pass)])]
      (tokens resp)))
   ([client-id refresh-token]
@@ -92,4 +93,3 @@
      (let [user (prompt "Username:")
            pass (prompt "Password:")]
        (authenticate client-id user pass)))))
-
