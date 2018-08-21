@@ -690,9 +690,88 @@ the assignment due date. In particular, you need to understand:
 
   Clojure for the Brave and True Through Chapter 3: https://www.braveclojure.com/
 
-Note: The Emacs installation instructions in Clojure for the B&T are out of date. Use the
-      leiningen instructions in "Launching a basic Repl" and the Emacs installation
-      instructions from the instructor.
+Note: The Emacs installation instructions in Clojure for the B&T are not being used. Use the
+      leiningen instructions in "Launching a basic Repl".
+
+## Protorepl Keyboard Shortcuts
+
+Mac:
+```
+cmd + enter = Execute the block of code in front of the cursor
+cmd + r     = Connect to a remote REPL
+cmd + l     = Load the current file into the REPL
+cmd + m     = Open the Atom command palette which can be used to run any  
+              command
+cmd + p     = Open a file in the current project
+cmd + o     = Open a file
+```
+
+Windows:
+```
+ctrl + enter = Execute the block of code in front of the cursor
+ctrl + r     = Connect to a remote REPL
+ctrl + l     = Load the current file into the REPL
+ctrl + m     = Open the Atom command palette which can be used to run any  
+              command
+ctrl + p     = Open a file in the current project
+ctrl + o     = Open a file
+```
+
+The typical usage to connect to a REPL would be:
+
+1. Open a Clojure file
+2. Make sure you have launched a REPL for the current project in the terminal
+3. cmd + r (fill in the info to connect to the repl)
+4. cmd + l (load the current file so every function is available)
+5. cmd + enter (after some form you want to evaluate / play with)
+
+
+## Common Exceptions and What they Mean
+
+### Unable to resolve symbol
+
+If you attempt to refer to something that hasn't been defined, such as a method
+or variable that doesn't exist, you will get an error like this:
+
+```clojure
+java.lang.RuntimeException: Unable to resolve symbol: foo in this context
+clojure.lang.Compiler$CompilerException: java.lang.RuntimeException: Unable to resolve symbol: foo in this context, compiling:(/Users/jules/Dev/workspaces/vandy/CS4278-2018-Asgns/asgnX/src/asgnx/core.cljc:1:1)
+```
+
+Look at the "Unable to resolve symbol: foo" and figure out what "foo" you are
+refering to that hasn't been defined.
+
+Another common reason for these errors is that you are trying to use a function in
+another namespace that hasn't been required correctly.
+
+### cannot be cast to clojure.lang.Ifn
+A common error is attempting to invoke a function like this:
+
+```clojure
+(foo a b)
+```
+
+Where `foo` is not a function. For example, this code:
+
+```clojure
+(3 1 2)
+```
+
+The number `3` is not a function and cannot be invoked. This will produce an
+error message that looks like:
+
+```clojure
+java.lang.ClassCastException: java.lang.Long cannot be cast to clojure.lang.IFn
+```
+
+The error message will vary based on the "type" of the thing that you try to
+invoke as a function. For example, trying to invoke a string as a function will
+produce:
+
+```clojure
+java.lang.ClassCastException: java.lang.String cannot be cast to clojure.lang.IFn
+```
+
 
 ## License
 
