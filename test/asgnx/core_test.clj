@@ -107,3 +107,63 @@
       (is (= "No!" ((router msg4) msg4)))
       (is (= 3 ((router msg2) msg2)))
       (is (= msg3 ((router msg3) msg3))))))
+
+
+(deftest action-send-msg-test
+  (testing "That action send msg returns a correctly formatted map"
+    (is (= :send
+           (:action (action-send-msg :bob "foo"))))
+    (is (= :bob
+           (:to (action-send-msg :bob "foo"))))
+    (is (= "foo"
+           (:msg (action-send-msg [:a :b] "foo"))))))
+
+
+(deftest action-send-msgs-test
+  (testing "That action send msgs generates a list of sends"
+    (let [a (action-send-msg [:a :f :b] 1)
+          b (action-send-msg [:a :f :d] 1)
+          c (action-send-msg [:a :f :e] 1)
+          d (action-send-msg [:a :f :c] 1)]
+      (is (= [a b c d]
+             (action-send-msgs [[:a :f :b]
+                                [:a :f :d]
+                                [:a :f :e]
+                                [:a :f :c]]
+                              1))))))
+
+
+(deftest action-insert-test
+  (testing "That action insert returns a correctly formatted map"
+    (is (= [:action :ks :v]
+           (keys (action-insert [:a :b] {:foo 1}))))
+    (is (= [:assoc-in [:a :b] {:foo 1}]
+           (vals (action-insert [:a :b] {:foo 1}))))
+    (is (= :assoc-in
+           (:action (action-insert [:a :b] {:foo 1}))))
+    (is (= {:foo 1}
+           (:v (action-insert [:a :b] {:foo 1}))))
+    (is (= [:a :b]
+           (:ks (action-insert [:a :b] {:foo 1}))))))
+
+
+(deftest action-remove-test
+  (testing "That action remove returns a correctly formatted map"
+    (is (= [:action :ks]
+           (keys (action-remove [:a :b]))))
+    (is (= [:dissoc-in [:a :b]]
+           (vals (action-remove [:a :b]))))
+    (is (= :dissoc-in
+           (:action (action-remove [:a :b]))))
+    (is (= [:a :b]
+           (:ks (action-remove [:a :b]))))))
+
+
+(deftest action-inserts-test
+  (testing "That action inserts generates a list of inserts"
+    (let [a (action-insert [:a :f :b] 1)
+          b (action-insert [:a :f :d] 1)
+          c (action-insert [:a :f :e] 1)
+          d (action-insert [:a :f :c] 1)]
+      (is (= [a b c d]
+             (action-inserts [:a :f] [:b :d :e :c] 1))))))
