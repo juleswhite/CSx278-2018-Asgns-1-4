@@ -110,8 +110,8 @@
 ;; and convert it to a string format.
 ;;
 ;; Example:
-;;  (office-hours {:cmd "office" :args ["thursday"]}) =>
-;;  "from 8am to 10am in the chairs outside of the Wondry"
+;; (formatted-hours {:start 8 :end 10 :location "the chairs outside of the Wondry"}))
+;; "from 8am to 10am in the chairs outside of the Wondry"
 ;;
 ;; You should use your format-hour function to implement this.
 ;;
