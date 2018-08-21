@@ -150,7 +150,7 @@
 
 ;; Asgn 2.
 ;;
-;; @Todo: Create a function called action-send-msg that takes
+;; @Todo: Create a function called action-send-msgs that takes
 ;; takes a list of people to receive a message in a `people`
 ;; parameter and a message to send them in a `msg` parmaeter
 ;; and returns a list produced by invoking the above `action-send-msg`
