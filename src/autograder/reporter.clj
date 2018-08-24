@@ -124,6 +124,13 @@
 ;; original assignment repo state.
 ;;
 
+(defn date-time-now-str []
+  (.format
+    (java.time.format.DateTimeFormatter/ofPattern
+     "MM-dd-yyyy-HH-mm-ss"
+     java.util.Locale/ENGLISH)
+    (java.time.LocalDateTime/now)))
+
 (defn asgn-git-repo
   "Loads the shadow git repo in the user's ~/.autograder directory."
   []
@@ -135,10 +142,14 @@
   [msg]
   (let [path (str autograder-home "/" assignment-id)
         prj  (str path "/project.clj")]
-    (fs/copy-dir "./src" path)
-    (fs/copy-dir "./test" path)
-    (fs/copy "./project.clj" prj)
-    (let [repo (asgn-git-repo)]
+    (let [repo (asgn-git-repo)
+          brch (date-time-now-str)]
+      (git/git-checkout repo "master")
+      (git/git-branch-create repo brch)
+      (git/git-checkout repo brch)
+      (fs/copy-dir "./src" path)
+      (fs/copy-dir "./test" path)
+      (fs/copy "./project.clj" prj)
       (git/git-add repo ".")
       (let [commit (git/git-commit repo msg)
             patch  (gitq/changed-files-with-patch repo commit)]
@@ -161,6 +172,7 @@
         (println repo)
         (git/git-add repo ".")
         (git/git-commit repo "Hand-in Init"))
+
       (println "Hand-in directory created."))))
 
 ;; ===============================
