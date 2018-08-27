@@ -134,7 +134,6 @@
 
 (deftest action-insert-test
   (testing "That action insert returns a correctly formatted map"
-x
     (is (= #{:action :ks :v}
            (into #{}(keys (action-insert [:a :b] {:foo 1})))))
     (is (= #{:assoc-in [:a :b] {:foo 1}}
