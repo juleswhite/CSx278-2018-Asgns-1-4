@@ -134,10 +134,11 @@
 
 (deftest action-insert-test
   (testing "That action insert returns a correctly formatted map"
-    (is (= [:action :ks :v]
-           (keys (action-insert [:a :b] {:foo 1}))))
-    (is (= [:assoc-in [:a :b] {:foo 1}]
-           (vals (action-insert [:a :b] {:foo 1}))))
+x
+    (is (= #{:action :ks :v}
+           (into #{}(keys (action-insert [:a :b] {:foo 1})))))
+    (is (= #{:assoc-in [:a :b] {:foo 1}}
+           (into #{}(vals (action-insert [:a :b] {:foo 1})))))
     (is (= :assoc-in
            (:action (action-insert [:a :b] {:foo 1}))))
     (is (= {:foo 1}
@@ -148,10 +149,10 @@
 
 (deftest action-remove-test
   (testing "That action remove returns a correctly formatted map"
-    (is (= [:action :ks]
-           (keys (action-remove [:a :b]))))
-    (is (= [:dissoc-in [:a :b]]
-           (vals (action-remove [:a :b]))))
+    (is (= #{:action :ks}
+         (into #{} (keys (action-remove [:a :b])))))
+    (is (= #{:dissoc-in [:a :b]}
+          (into #{}(vals (action-remove [:a :b])))))
     (is (= :dissoc-in
            (:action (action-remove [:a :b]))))
     (is (= [:a :b]
