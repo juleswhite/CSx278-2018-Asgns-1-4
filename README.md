@@ -22,9 +22,7 @@ checkout -b asgn4-solution") and merge the "asgn4" branch into it ("git merge as
   1. Clone the repo
   2. Install Java 8 or higher
   3. Install Leiningen and ensure it is on your path (https://leiningen.org/)
-  4. Install the Amazon AWS CLI Tools (https://aws.amazon.com/cli/) and make sure
-     that your AWS account credentials are stored in a credentials file as
-     described here: https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html
+  4. Install the Amazon AWS CLI Tools (https://aws.amazon.com/cli/) 
   5. Sign up for a Cognito account for the Autograder using:
 
      https://cs4278-2018.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=2akam9tnpjfkkdn1e38qbopkb4&redirect_uri=https://www.magnum.io
