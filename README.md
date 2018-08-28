@@ -30,7 +30,6 @@ checkout -b asgn4-solution") and merge the "asgn4" branch into it ("git merge as
      Note: after signing up, you may be redirected to a blank page, which is OK. Just
            make sure that you create an account.
 
-  6. Run "lein deps" in the root of the project
   7. Run "lein repl" and make sure that you see something like:
 
   ```
