@@ -128,7 +128,9 @@ Serverless: Secrets validated
 
 11. To learn more about serverless secrets management, see: https://github.com/trek10inc/serverless-secrets
 
-12. Set BucketName in serverless.yml to "cs4278-asgnx-state-<...>"(fill <...> with your own name).
+12. Set BucketName in serverless.yml to "cs4278-asgnx-state-<...>"(fill <...> with your own name). You must choose a
+    bucket name that is globally unique to AWS S3. If you do not choose a unique name, you will get the 
+    "bucket already exists" error described below.
 
 13. Set "s3/s3-keystore" on line 78 of lambda.cljs to the bucket name you set in step 12.
 
@@ -684,7 +686,7 @@ compiled.
 
   5. Deploy Errors - bucket already exists.
   
-  Bucket name of an S3 bucket is globally unique. If the bucket name in your codes (serverless.yml/ lambda.cljs) is same with others, you will get following error:
+  The name of an S3 bucket must be globally unique. If the bucket name you use in (serverless.yml/ lambda.cljs) already exists in S3, you will get the following error:
 
 ```
 Serverless: Operation failed!
@@ -693,7 +695,7 @@ Serverless: Operation failed!
  
   An error occurred: StateBucket - cs4278-asgnx-state already exists.
 ```
-
+  You can correct this error by choosing a bucket name that isn't already in use.
 
 
 
