@@ -351,11 +351,6 @@
 ;; when an expert answers (see the conversations query) and make sure you
 ;; handle the needed side effect for storing the conversation state.
 ;;
-;; If there are no registered experts on a topic, you should return an
-;; empty list of actions and "There are no experts on that topic."
-;;
-;; If there isn't a question, you should return "You must ask a valid question."
-;;
 ;; Why this strange architecture? By returning a list of the actions to take,
 ;; rather than directly taking that action, we can keep this function pure.
 ;; Pure functions are WAY easier to test / maintain. Also, we can isolate our
