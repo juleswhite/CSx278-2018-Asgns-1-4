@@ -335,7 +335,7 @@
 ;;
 ;; The parsed message would be:
 ;;
-;; {:cmd "ask"
+;; {:cmd "answer"
 ;;  :user-id "+15555555555"
 ;;  :args ["joey's" "house" "of" "pizza"]}
 ;;
