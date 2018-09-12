@@ -222,7 +222,7 @@
 ;; Your function should NOT directly change the application state
 ;; to register them but should instead return a list of the
 ;; appropriate side-effects (above) to make the registration
-;; happen.
+;; happen (hint: action-insert).
 ;;
 ;; See the integration test in See handle-message-test for the
 ;; expectations on how your code operates
@@ -240,7 +240,7 @@
 ;; Your function should NOT directly change the application state
 ;; to unregister them but should instead return a list of the
 ;; appropriate side-effects (above) to make the registration
-;; happen.
+;; happen (hint: action-remove).
 ;;
 ;; See the integration test in See handle-message-test for the
 ;; expectations on how your code operates
@@ -397,18 +397,20 @@
 ;; This function needs to add "sara" to the list of experts on "food" and
 ;; associate her phone number with her ID.
 ;;
-;; Similar to the function `ask-experts` function, this function needs to
-;; return the updated `state`, which should now have the expert registered
-;; under the specified topic (e.g., "sara" under "food"). The output to
-;; send back to the user should be (str expert-id " is now an expert on " topic)
+;; This function needs to return a list with two elements:
+;; [[actions...] "response to the person adding themselves as an expert"]
 ;;
-;; The last line of your function should be something like:
+;; The actions in the list are the *side effects* that need to take place
+;; to add the person as an expert on the topic (hint: result of calling experts-register). The string
+;; is the response that is going to be sent back to the person adding themselves
+;; as an expert.
 ;;
-;; [new-state (str expert-id " is now an expert on " topic)]
+;; You should look at `handle-message` to get an idea of the way that this
+;; function is going to be used, its expected signature, and how the actions
+;; and output are going to work.
 ;;
 ;; See the integration test in See handle-message-test for the
 ;; expectations on how your code operates
-;;
 (defn add-expert [experts {:keys [args user-id]}])
 
 ;; Don't edit!
