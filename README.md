@@ -240,28 +240,184 @@ functionality (e.g., those tests still have to pass, no regressions allowed) and
 the new functionality. Your grade is calculated from all tests from the past
 assignments AND all the tests from the new assignment.
 
-The VERY FIRST THING you should do is create empty implementations of these
-functions in order to get rid of the compilation errors in core_test.clj:
+#### Structure of the Stored State
 
-``` clojure
-experts-register
-experts-unregister
-experts
-add-expert
-ask-experts
+The application persists state between executions in a key / value store, which you
+can think of as a map that persists to disk. You can insert/update this map with the actions
+:assoc-in and :dissoc-in. 
+
+For example, the action:
+
+```clojure
+{:action :assoc-in :ks [:cooks "bob"] :v {:job "chef"}} 
 ```
 
-For example, you could create the dummy fn:
+This would update the stored state to conceptually look like this:
 
-``` clojure
-(defn experts-register [& args])
+```clojure
+{:cooks {"bob" {:job "chef"}}}
 ```
 
-Later, you could modify it to something to match the spec, like:
+Another insert would further update the stored state:
 
-``` clojure
-(defn experts-register [state topic expert-id expert-info]
+```clojure
+{:action :assoc-in :ks [:cooks "john"] :v {:job "line chef"}} 
 ```
+
+resulting in the following stored state:
+
+
+```clojure
+{:cooks {"bob"  {:job "chef"}
+         "john" {:job "line chef"}}}
+```
+
+The state for the SMS experts / ask functionality is stored using a structure
+that looks like this:
+
+```clojure
+{:expert {
+      "parking" {
+                 "+15555555555"  {:whatever :data}
+                 "+15557777777"  {:whatever :data :about :expert}
+                 }
+       "food"    {
+                 "+15551212121"  {:whatever :data :about :expert}
+                 }
+          }
+                 
+ :conversations {
+          "+15555555555" {:last-question "where to park?" :asker "+15554443210"}
+          "+15557777777" {:last-question "where to park?" :asker "+15554443210"}
+ }}
+```
+
+The `:expert` section of the data uses keys that are the "topics" and the maps
+beneath the topics store the `user-id`s (phone numbers) of the experts on that
+topic. The data associated with the expert (the `info` parameter) is arbitrary
+and up to you -- it can even be an empty map for this assignment. 
+
+If you wanted to update the list of experts, you might want to use your `action-insert`
+function from prior work.
+
+The `:conversations` store information about the last question that was sent to
+an expert and who asked it. You decide the structure of the values that are mapped
+to the expert `user-id`s, but one suggested format is provided above. The most
+important part for whatever structure that you choose is that you store the phone
+number of the user that asked the last question sent to each expert. This information
+allows answers sent by an expert to be sent back to the original question asker.  
+
+If you wanted to update the list of conversations, you might want to use your `action-insert`
+function from prior work.
+
+#### Queries
+
+Each command is mapped to a query that retrieves data for it before its associated handler 
+function is invoked. The queries have been provided for you and are excerpted below:
+
+```clojure
+;; Don't edit!
+(defn experts-on-topic-query [state-mgr pmsg]
+  (let [[topic]  (:args pmsg)]
+    (list! state-mgr [:expert topic])))
+
+
+;; Don't edit!
+(defn conversations-for-user-query [state-mgr pmsg]
+  (let [user-id (:user-id pmsg)]
+    (get! state-mgr [:conversations user-id])))
+
+
+;; Don't edit!
+(def queries
+  {"expert" experts-on-topic-query
+   "ask"    experts-on-topic-query
+   "answer" conversations-for-user-query})
+```
+
+This code means that text messages with the "expert" command, such as "expert food", will
+be routed to the `experts-on-topic-query`. This query will then look up the list of keys
+in the stored state that are beneath `[:expert "food"]`. The keys will be what your 
+`state-keys` function returns, which will be a list of strings containing the `user-ids`
+of the experts mapped to that topic. The data from this query, which is the list of experts
+on the topic will then be passed to your `add-expert` and `ask-experts` functions in the
+`experts` parameter. All you need to do is to make sure that you insert experts into the
+stored state under the appropriate keys for the topics that they register for and the queries
+will take care of loading the data for your `add-expert` and `ask-experts` functions.
+
+Similarly, the `conversations-for-user-query` loads the saved state that is needed to 
+process "answer park in 24th ave garage" style responses from the experts. The query looks
+up the information about the last question sent to the answering expert and who asked it. The
+resulting data is then passed in as the `conversation` parameter in `answer-question`. The
+format of the conversation data is up to you but should include the information about the 
+`user-id` of the person that asked each expert their most recent question. Experts can
+answer their most recently asked question.
+
+
+#### Common Pitfalls
+
+A common error is returning a result from your handler function that is not in the
+right format. Your handler function must return a list with this format:
+
+```
+[ [..actions...] "output to text message sender" ]
+```
+
+The actions are the results of calling your various action-insert, action-send-msg,
+etc. functions from past assignments. 
+
+You must ensure that the `[...actions...]` are a single list of actions. This
+is an example of a possible return from a handler function:
+
+```
+[ [{:action :assoc-in :ks [:expert "foo"] {:last-asker "+15555555555"}}
+   {:action :assoc-in :ks [:expert "bob"] {:last-asker "+15555555555"}}]
+   "Your question was sent."  ]
+```
+
+If you do not use this format, you will fail the tests and see error messages
+like "expected: the blue bus" and "actual: what burger". If you have implemented
+a bunch of action :assoc-in and are wondering why they aren't working, there is a
+good chance they are being returned in the wrong format.
+
+Be careful of returning results in the following formats:
+
+```
+No list wrapping the actions:
+[  {:action :assoc-in :ks [:expert "foo"] {:last-asker "+15555555555"}}
+   "Your question was sent."  ]
+
+Nested lists in the actions:
+[  [[{:action :assoc-in :ks [:expert "foo"] {:last-asker "+15555555555"}}]
+    [{:action :assoc-in :ks [:expert "bob"] {:last-asker "+15555555555"}}]] 
+   "Your question was sent."  ]
+
+No single list of actions:
+[  {:action :assoc-in :ks [:expert "foo"] {:last-asker "+15555555555"}}
+   {:action :assoc-in :ks [:expert "bob"] {:last-asker "+15555555555"}} 
+   "Your question was sent."  ]
+```
+
+#### Sending Text Messages
+
+Use your `action-send-msg` and `action-send-msgs` functions to send text messages to
+someone other than the person that sent the current command.
+
+#### Parameters to Functions
+
+You may not have to use every parameter in every function. 
+
+#### What is `info`
+
+You can make info anything that you want.
+
+#### What is `conversation`
+
+See Queries.
+
+#### What is `experts`
+
+See Queries.
 
 
 ### Asgn 4
