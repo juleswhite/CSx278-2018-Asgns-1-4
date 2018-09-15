@@ -72,9 +72,12 @@ checkout -b asgn4-solution") and merge the "asgn4" branch into it ("git merge as
 You must create a Twilio account to send / receive SMS. To do this, follow
 these steps:
 
+
 0. Merge the asgn4 branch into your current branch
-1. Install the Serverless framework and all dependencies (NodeJs, etc.): https://serverless.com/framework/docs/providers/aws/guide/installation/
-2. Verify that the "sls" command is on your path and add it if it is not
+1. Install the Serverless framework and all dependencies (NodeJs, etc.): https://serverless.com/framework/docs/providers/aws/guide/installation/ and verify 
+that the "sls" command is on your path and add it if it is not
+2. Create an AWS account and connect it to your AWS CLI by setting up a ~/.aws/credentials file
+   with your access and secret keys as described here: https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html
 3. Run the command "lein deps" at the root of your project
 4. Create a Twilio account and enable 2-factor auth
 5. You will need to fund the account with $20
@@ -203,6 +206,8 @@ The server score is considered the definitive score.
 Passed all tests
 
 ```
+17. You should now be able to send a text message to your Twilio phone number in order to
+    interact with you application
 
 ## Assignment Spec
 
