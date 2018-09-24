@@ -69,16 +69,22 @@ checkout -b asgn4-solution") and merge the "asgn4" branch into it ("git merge as
 
 ## Installation for Asgn 4
 
+If you already completed Asgn 4 with an earlier version of the instructions, you do not have to redo it
+with the updated instructions.
+
 You must create a Twilio account to send / receive SMS. To do this, follow
 these steps:
-
 
 0. Merge the asgn4 branch into your current branch
 1. Install the Serverless framework and all dependencies (NodeJs, etc.): https://serverless.com/framework/docs/providers/aws/guide/installation/ and verify 
 that the "sls" command is on your path and add it if it is not
 2. Create an AWS account and connect it to your AWS CLI by setting up a ~/.aws/credentials file
    with your access and secret keys as described here: https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html
-3. Run the command "lein deps" at the root of your project
+   
+   Write down the FULL PATH to your .aws/credentials file.
+   
+3. Install Docker (https://www.docker.com/get-started) and make sure it is on your path so that you can run
+   "docker -v" in a terminal and see the version printed out.
 4. Create a Twilio account and enable 2-factor auth
 5. You will need to fund the account with $20
 
@@ -99,11 +105,10 @@ that the "sls" command is on your path and add it if it is not
    At the end of the class, you should go and release this phone number and
    cancel your Twilio account if you are no longer going to use it.
 
-6. Go to Twilio and buy an SMS-enabled phone number with a 615 area code
+6. Go to Twilio and buy an SMS-enabled phone number with a 615 area code (or another area code of your choosing)
    and write down the number.
 7. Go to Twilio settings and write down your live and test credentials
-8. Run the command "lein deps" in this project
-9. Create secure secrets for your Twilio credentials in AWS, by running these
+8. Create secure secrets for your Twilio credentials in AWS, by running these
    commands (fill-in <...>):
 
 ```
@@ -113,7 +118,7 @@ sls secrets set --name twilio-test-account-sid --text <your test sid> --region u
 sls secrets set --name twilio-test-token --text <your test token> --region us-east-1
 ```
 
-10. Verify that you did everything correctly by running this command
+9. Verify that you did everything correctly by running this command
     in the root of the project:
 
 ```
@@ -129,15 +134,27 @@ Serverless: Validating secrets
 Serverless: Secrets validated
 ```
 
-11. To learn more about serverless secrets management, see: https://github.com/trek10inc/serverless-secrets
+10. To learn more about serverless secrets management, see: https://github.com/trek10inc/serverless-secrets
 
-12. Set BucketName in serverless.yml to "cs4278-asgnx-state-<...>"(fill <...> with your own name). You must choose a
+11. Set BucketName in serverless.yml to "cs4278-asgnx-state-<...>"(fill <...> with your own name). You must choose a
     bucket name that is globally unique to AWS S3. If you do not choose a unique name, you will get the 
     "bucket already exists" error described below. **Make sure that you edit all three places that refer to the bucket**.
 
-13. Set "s3/s3-keystore" on line 78 of lambda.cljs to the bucket name you set in step 12.
+12. Set "s3/s3-keystore" on line 78 of lambda.cljs to the bucket name you set in step 12.
 
-14. Run "sls deploy" in the root directory and you should see something like this:
+13. Build the docker image to deploy the application by running:
+
+```
+docker build -t deployer .
+```
+
+14. Run the deployer by replacing the paths in "< >" with the fully qualified path on your machine:
+
+```
+docker run -v <full path to project root>:/project -v <full path to .aws directory>:/root/.aws  -t deployer
+```
+
+You should see something like this print out:
 
 ```
 Serverless: Targeting /.../asgnX/.serverless/asgnx.zip
@@ -183,7 +200,7 @@ Serverless: Removing old service versions...
  :phone-number "+1615xxxxxxx"}
 ```
 
-16. Run the autograder with "lein test-refresh" and hope for this:
+18. Run the autograder with "lein test-refresh" and hope for this:
 
 ```
 ================================================
@@ -206,7 +223,7 @@ The server score is considered the definitive score.
 Passed all tests
 
 ```
-17. You should now be able to send a text message to your Twilio phone number in order to
+19. You should now be able to send a text message to your Twilio phone number in order to
     interact with you application
 
 ## Assignment Spec
