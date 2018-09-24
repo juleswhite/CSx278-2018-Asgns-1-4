@@ -142,16 +142,10 @@ Serverless: Secrets validated
 
 12. Set "s3/s3-keystore" on line 78 of lambda.cljs to the bucket name you set in step 12.
 
-13. Build the docker image to deploy the application by running:
-
-```
-docker build -t deployer .
-```
-
 14. Run the deployer by replacing the paths in "< >" with the fully qualified path on your machine:
 
 ```
-docker run -v <full path to project root>:/project -v <full path to .aws directory>:/root/.aws  -t deployer
+docker run -v <full path to project root>:/project -v <full path to .aws directory>:/root/.aws  -t juleswhite/cs27x:asgn4-deployer
 ```
 
 You should see something like this print out:
