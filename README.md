@@ -65,9 +65,9 @@ checkout -b asgn4-solution") and merge the "asgn4" branch into it ("git merge as
 
   11. Unless this is Asgn 4, skip down to the assignment spec and read
       the rest of this README very carefully.
+     
 
-
-## Installation for Asgn 4
+## Installation for Asgn 4 on OS X, Windows 10 Pro, Windows 10 Enterprise, and Windows 10 Education
 
 If you already completed Asgn 4 with an earlier version of the instructions, you do not have to redo it
 with the updated instructions.
@@ -85,6 +85,23 @@ that the "sls" command is on your path and add it if it is not
    
 3. Install Docker (https://www.docker.com/get-started) and make sure it is on your path so that you can run
    "docker -v" in a terminal and see the version printed out.
+   
+   Test that your Docker install is working and can share volumes with this command:
+   
+   ```
+   docker run -v <full path to project root>:/project -v <full path to .aws directory>:/root/.aws  -it juleswhite/cs27x:asgn4-    deployer /bin/bash
+   ```
+   
+   You should see a bash shell prompt. Check the contents of the /project directory:
+   
+   ```
+   root@b9e0fa6ea890:/project# ls /project
+   Dockerfile  README.md	    deploy.edn	  out		     project.clj  serverless.yml   src	   test
+   LICENSE     assignment.edn  node_modules  package-lock.json  resources	  shadow-cljs.edn  target
+   ```
+   
+   Make sure that you see your project code in the output.
+   
 4. Create a Twilio account and enable 2-factor auth
 5. You will need to fund the account with $20
 
@@ -219,6 +236,163 @@ Passed all tests
 ```
 19. You should now be able to send a text message to your Twilio phone number in order to
     interact with you application
+
+
+## Installation for Windows Home
+
+If you already completed Asgn 4 with an earlier version of the instructions, you do not have to redo it
+with the updated instructions.
+
+You must create a Twilio account to send / receive SMS. To do this, follow
+these steps:
+
+0. Merge the asgn4 branch into your current branch
+
+1. Install the Serverless framework and all dependencies (NodeJs, etc.): https://serverless.com/framework/docs/providers/aws/guide/installation/ and verify 
+that the "sls" command is on your path and add it if it is not
+
+2. Create an AWS account and connect it to your AWS CLI by setting up a ~/.aws/credentials file
+   with your access and secret keys as described here: https://docs.aws.amazon.com/cli/latest/userguide/cli-config-files.html
+   
+   Write down the FULL PATH to your .aws/credentials file.
+   
+3. Install Docker Toolbox (not the normal Docker install!!) https://docs.docker.com/toolbox/toolbox_install_windows/.
+
+4. Create a Twilio account and enable 2-factor auth
+5. You will need to fund the account with $20
+
+   When you setup billing:
+
+   ```
+   WARNING: DO NOT ENABLE AUTO-RECHARGE ON YOUR ACCOUNT
+
+            DO NOT ENABLE AUTO-RECHARGE ON YOUR ACCOUNT
+
+            IF YOU DO, BAD THINGS CAN HAPPEN
+
+            YOU HAVE BEEN WARNED
+   ```
+
+   IMPORTANT:
+   -----------
+   At the end of the class, you should go and release this phone number and
+   cancel your Twilio account if you are no longer going to use it.
+
+6. Go to Twilio and buy an SMS-enabled phone number with a 615 area code (or another area code of your choosing)
+   and write down the number.
+7. Go to Twilio settings and write down your live and test credentials
+8. Create secure secrets for your Twilio credentials in AWS, by running these
+   commands (fill-in <...>):
+
+```
+sls secrets set --name twilio-prod-account-sid --text <your live sid> --region us-east-1
+sls secrets set --name twilio-prod-token --text <your live token> --region us-east-1
+sls secrets set --name twilio-test-account-sid --text <your test sid> --region us-east-1
+sls secrets set --name twilio-test-token --text <your test token> --region us-east-1
+```
+
+9. Verify that you did everything correctly by running this command
+    in the root of the project:
+
+```
+sls secrets validate
+```
+
+You should see output that looks like this:
+
+```
+Serverless: Targeting /..../asgnX/.serverless/asgnx.zip
+Serverless: Generating Serverless Secrets Config
+Serverless: Validating secrets
+Serverless: Secrets validated
+```
+
+10. To learn more about serverless secrets management, see: https://github.com/trek10inc/serverless-secrets
+
+11. Set BucketName in serverless.yml to "cs4278-asgnx-state-<...>"(fill <...> with your own name). You must choose a
+    bucket name that is globally unique to AWS S3. If you do not choose a unique name, you will get the 
+    "bucket already exists" error described below. **Make sure that you edit all three places that refer to the bucket**.
+
+12. Set "s3/s3-keystore" on line 78 of lambda.cljs to the bucket name you set in step 12.
+
+14. Run the deployer by replacing the paths in "< >" with the fully qualified path on your machine:
+
+```
+docker run -v <full path to project root>:/project -v <full path to .aws directory>:/root/.aws  -t juleswhite/cs27x:asgn4-deployer
+```
+
+You should see something like this print out:
+
+```
+Serverless: Targeting /.../asgnX/.serverless/asgnx.zip
+Serverless: Generating Serverless Secrets Config
+Serverless: Serverless Secrets beginning packaging process
+Serverless: Writing .serverless-secrets.json
+Serverless: Validating secrets
+Serverless: Secrets validated
+Serverless: Adding environment variable placeholders for Serverless Secrets
+Serverless: Packaging service...
+Serverless: Executing "lein update-in :cljs-lambda assoc :functions '[{:name "asgnx-dev-handle-msg" :invoke asgnx.lambda/receive-message}]' -- cljs-lambda build :output /.../asgnX/.serverless/asgnx.zip :quiet"
+Serverless: Returning artifact path /.../asgnX/.serverless/asgnx.zip
+Serverless: Cleaning up .serverless-secrets.json
+Serverless: Uploading CloudFormation file to S3...
+Serverless: Uploading artifacts...
+Serverless: Validating template...
+Serverless: Updating Stack...
+Serverless: Checking Stack update progress...
+..............
+Serverless: Stack update finished...
+Service Information
+service: asgnx
+stage: dev
+region: us-east-1
+stack: asgnx-dev
+api keys:
+  None
+endpoints:
+  GET - https://abcxyz.execute-api.us-east-1.amazonaws.com/dev/msg
+  POST - https://defxyz.execute-api.us-east-1.amazonaws.com/dev/msg
+functions:
+  handle-msg: asgnx-dev-handle-msg
+Serverless: Removing old service versions...
+```
+
+15. Copy the endpoint URL for POST
+16. Create a "deploy.edn" file in the root folder of the project
+17. Insert a raw Clojure map in the file with keys for your endpoint and
+    phone number like this (replace these dummy values with yours!):
+
+```
+{:endpoint "https://abcxyz.execute-api.us-east-1.amazonaws.com/dev/msg"
+ :phone-number "+1615xxxxxxx"}
+```
+
+18. Run the autograder with "lein test-refresh" and hope for this:
+
+```
+================================================
+               Estimated Score:
+================================================
+
+|             :test | :score | :out-of |
+|-------------------+--------+---------|
+|   asgnx.core-test |   10.0 |      10 |
+| asgnx.deploy-test |   90.0 |      90 |
+
+Total:  100.00 / 100
+================================================
+Score submitted.
+
+Your actual score is calculated on the server and
+may be different than this score in some circumstances.
+The server score is considered the definitive score.
+
+Passed all tests
+
+```
+19. You should now be able to send a text message to your Twilio phone number in order to
+    interact with you application
+
 
 ## Assignment Spec
 
