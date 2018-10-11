@@ -40,6 +40,20 @@
 
             :target-path "target/%s"
 
+            ;; To run the code under node with automatic recompilation, do the following:
+            ;; 1. Open a terminal to the root project directory
+            ;; 2. Run "lein node-repl"
+            ;; 3. Open a separate terminal in the root project directory
+            ;; 4. Install nodemon "npm install -g nodemon"
+            ;; 5. Run "nodemon nodemon out/demo-script/script.js"
+            ;; 6. Note, you can change the output script from out/demo-script/script.js to something 
+            ;;    else by editing shadow-cljs.edn
+            ;; 7. This will automatically compile and run the node-repl function in lambda.cljs whenever
+            ;;    your code changes. The output from node-repl will be sent to the terminal running nodemon.
+            ;;    You can change what function is run in shadow-cljs.edn
+            ;; 8. If you want a true repl, you can connect to the repl opened by lein node-repl from your edit.
+            ;;    When the repl connects, you will be in the shadow.user namespace and will need to switch to
+            ;;    the repl associated with node by running the command "(shadow/nrepl-select :app)" in the repl.
             :aliases {"node-repl" ["run" "-m" "shadow.cljs.devtools.cli" "watch" ":app"]}
 
             :profiles {:uberjar {:aot :all}
